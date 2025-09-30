@@ -38,8 +38,8 @@ public class IntQueueTest {
     @Before
     public void setUp() {
         // comment/uncomment these lines to test each class
-        mQueue = new LinkedIntQueue();
-    //    mQueue = new ArrayIntQueue();
+        // mQueue = new LinkedIntQueue();
+       mQueue = new ArrayIntQueue();
 
         testList = new ArrayList<>(List.of(1, 2, 3));
     }
@@ -52,20 +52,28 @@ public class IntQueueTest {
 
     @Test
     public void testNotEmpty() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Test that queue is not empty after adding elements
+        mQueue.enqueue(42);
+        assertFalse(mQueue.isEmpty());
+        assertEquals(1, mQueue.size());
     }
 
     @Test
     public void testPeekEmptyQueue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Test that peek returns null when queue is empty
+        assertNull(mQueue.peek());
     }
 
     @Test
     public void testPeekNoEmptyQueue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Test that peek returns the head element without removing it
+        mQueue.enqueue(10);
+        mQueue.enqueue(20);
+        mQueue.enqueue(30);
+        
+        assertEquals(Integer.valueOf(10), mQueue.peek());
+        assertEquals(3, mQueue.size()); // Size should remain unchanged
+        assertEquals(Integer.valueOf(10), mQueue.peek()); // Should still be the same
     }
 
     @Test
@@ -80,8 +88,28 @@ public class IntQueueTest {
 
     @Test
     public void testDequeue() {
-        // TODO: write your own unit test
-        fail("Test not implemented");
+        // Test dequeue functionality - FIFO behavior
+        mQueue.enqueue(1);
+        mQueue.enqueue(2);
+        mQueue.enqueue(3);
+        
+        // Test dequeue from empty queue
+        IntQueue emptyQueue = new LinkedIntQueue();
+        assertNull(emptyQueue.dequeue());
+        
+        // Test FIFO order
+        assertEquals(Integer.valueOf(1), mQueue.dequeue());
+        assertEquals(2, mQueue.size());
+        assertEquals(Integer.valueOf(2), mQueue.peek());
+        
+        assertEquals(Integer.valueOf(2), mQueue.dequeue());
+        assertEquals(1, mQueue.size());
+        assertEquals(Integer.valueOf(3), mQueue.peek());
+        
+        assertEquals(Integer.valueOf(3), mQueue.dequeue());
+        assertEquals(0, mQueue.size());
+        assertTrue(mQueue.isEmpty());
+        assertNull(mQueue.peek());
     }
 
     @Test
@@ -102,6 +130,93 @@ public class IntQueueTest {
             for (Integer result : correctResult) {
                 assertEquals(mQueue.dequeue(), result);
             }
+        }
+    }
+
+    @Test
+    public void testClear() {
+        // Test clear functionality
+        mQueue.enqueue(1);
+        mQueue.enqueue(2);
+        mQueue.enqueue(3);
+        assertEquals(3, mQueue.size());
+        assertFalse(mQueue.isEmpty());
+        
+        mQueue.clear();
+        assertEquals(0, mQueue.size());
+        assertTrue(mQueue.isEmpty());
+        assertNull(mQueue.peek());
+        assertNull(mQueue.dequeue());
+    }
+
+    @Test
+    public void testEnqueueReturnValue() {
+        // Test that enqueue returns true for successful operations
+        assertTrue(mQueue.enqueue(1));
+        assertTrue(mQueue.enqueue(2));
+        assertTrue(mQueue.enqueue(3));
+    }
+
+    @Test
+    public void testFIFOOrder() {
+        // Test that queue maintains FIFO order
+        List<Integer> input = List.of(5, 3, 8, 1, 9);
+        List<Integer> expected = new ArrayList<>(input);
+        
+        // Enqueue all elements
+        for (Integer value : input) {
+            mQueue.enqueue(value);
+        }
+        
+        // Dequeue and verify FIFO order
+        List<Integer> actual = new ArrayList<>();
+        while (!mQueue.isEmpty()) {
+            actual.add(mQueue.dequeue());
+        }
+        
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testSizeAfterOperations() {
+        // Test size changes after various operations
+        assertEquals(0, mQueue.size());
+        
+        mQueue.enqueue(1);
+        assertEquals(1, mQueue.size());
+        
+        mQueue.enqueue(2);
+        assertEquals(2, mQueue.size());
+        
+        mQueue.peek(); // Should not change size
+        assertEquals(2, mQueue.size());
+        
+        mQueue.dequeue();
+        assertEquals(1, mQueue.size());
+        
+        mQueue.dequeue();
+        assertEquals(0, mQueue.size());
+        
+        mQueue.clear(); // Should remain 0
+        assertEquals(0, mQueue.size());
+    }
+
+    @Test
+    public void testMultipleEnqueueDequeue() {
+        // Test multiple cycles of enqueue/dequeue
+        for (int cycle = 0; cycle < 3; cycle++) {
+            // Enqueue some values
+            for (int i = 1; i <= 3; i++) {
+                mQueue.enqueue(i + cycle * 3);
+            }
+            
+            // Dequeue all values
+            for (int i = 1; i <= 3; i++) {
+                assertEquals(Integer.valueOf(i + cycle * 3), mQueue.dequeue());
+            }
+            
+            // Queue should be empty after each cycle
+            assertTrue(mQueue.isEmpty());
         }
     }
 
